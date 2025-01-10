@@ -19,5 +19,16 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+        ]);
+    
+        $admin = \App\Models\User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password'),
+        ]);
+        $admin->assignRole('admin');
     }
 }
