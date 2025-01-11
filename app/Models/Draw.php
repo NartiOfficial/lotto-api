@@ -9,14 +9,11 @@ class Draw extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'draw_date',
-        'numbers',
-    ];
+    protected $fillable = ['draw_date', 'winning_numbers'];
 
     protected $casts = [
-        'numbers' => 'array',
         'draw_date' => 'datetime',
+        'winning_numbers' => 'array',  
     ];
 
     public function coupons()

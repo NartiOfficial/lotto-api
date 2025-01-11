@@ -14,13 +14,10 @@ class TestDataController extends Controller
      */
     public function seed()
     {
-        // Tworzenie użytkowników
         User::factory()->count(10)->create();
 
-        // Tworzenie losowań
         Draw::factory()->count(5)->create();
 
-        // Tworzenie kuponów
         $users = User::all();
         $draws = Draw::all();
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -42,5 +43,14 @@ class UserController extends Controller
     {
         $coupons = $request->user()->coupons()->with('draws')->get();
         return response()->json($coupons, 200);
+    }
+
+    /**
+     * Pobranie wszystkich użytkowników.
+     */
+    public function index(Request $request)
+    {
+        $users = User::with('roles')->get();
+        return response()->json($users, 200);
     }
 }

@@ -9,13 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('draws', function (Blueprint $table) {
-            $table->id();
-            $table->dateTime('draw_date')->unique();
-            $table->json('numbers')->nullable();
-            $table->timestamps();
+            $table->id();  // Klucz główny
+            $table->dateTime('draw_date');  // Data i czas losowania
+            $table->json('winning_numbers')->nullable();  // Wygrywające liczby (opcjonalnie)
+            $table->timestamps();  // Kolumny `created_at` i `updated_at`
         });
     }
 

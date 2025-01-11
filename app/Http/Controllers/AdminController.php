@@ -47,4 +47,14 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'Użytkownik zablokowany'], 200);
     }
+
+    /**
+     * Pobranie wszystkich użytkowników i ich kuponów
+     */
+    public function getAllCoupons()
+    {
+        $coupons = Coupon::with('user')->get();
+
+        return response()->json($coupons, 200);
+    }
 }

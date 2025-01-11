@@ -26,10 +26,17 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        $user->assignRole('user');
+
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->getRoleNames()->first() ?? 'user',
+            ],
             'token' => $token,
         ], 201);
     }
@@ -48,14 +55,19 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => ['Podane dane logowania są nieprawidłowe.'],
             ]);
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->getRoleNames()->first() ?? 'user',
+            ],
             'token' => $token,
         ], 200);
     }
@@ -65,9 +77,8 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        // Usunięcie aktualnego tokena
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out'], 200);
+        return response()->json(['message' => 'Wylogowano pomyślnie.'], 200);
     }
 }
