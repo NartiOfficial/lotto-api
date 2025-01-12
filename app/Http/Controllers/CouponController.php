@@ -70,17 +70,48 @@ class CouponController extends Controller
         return response()->json($coupons, 200);
     }
 
-     /**
-     * Pobierz dane jednego kuponu.
-     */
+    /** 
+     * Pobranie kuponu do edytowania
+    */
     public function show($id)
     {
-        $coupon = Coupon::with(['user', 'draws'])->find($id);
-
-        if (!$coupon) {
-            return response()->json(['message' => 'Kupon nie został znaleziony.'], 404);
+        try {
+            $coupon = Coupon::with(['user', 'draws'])->findOrFail($id);
+            return response()->json($coupon);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Kupon nie znaleziony'], 404);
         }
-
-        return response()->json($coupon, 200);
     }
+
+    /** 
+     * Aktualizacja kuponu
+    */
+     public function update(Request $request, $id)
+     {
+         $validator = Validator::make($request->all(), [
+             'numbers' => 'required|array|size:6',
+             'numbers.*' => 'integer|between:1,49',
+             'user_id' => 'required|exists:users,id',
+             'draw_ids' => 'required|array|min:1',
+             'draw_ids.*' => 'exists:draws,id'
+         ]);
+ 
+         if ($validator->fails()) {
+             return response()->json(['errors' => $validator->errors()], 400);
+         }
+ 
+         try {
+             $coupon = Coupon::findOrFail($id);
+ 
+             $coupon->numbers = $request->numbers;
+             $coupon->user_id = $request->user_id;
+             $coupon->save();
+ 
+             $coupon->draws()->sync($request->draw_ids);
+ 
+             return response()->json(['message' => 'Kupon zaktualizowany pomyślnie!', 'coupon' => $coupon]);
+         } catch (\Exception $e) {
+             return response()->json(['message' => 'Błąd podczas aktualizacji kuponu'], 500);
+         }
+     }
 }

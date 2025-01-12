@@ -34,12 +34,14 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/admin/coupons', [AdminController::class, 'getAllCoupons']);
     Route::get('/admin/coupons/{id}', [CouponController::class, 'show']);
+    Route::put('/admin/coupons/{id}', [CouponController::class, 'update']);
     Route::delete('/admin/coupons/{id}', [AdminController::class, 'deleteCoupon']);
+
     Route::get('/admin/users', [UserController::class, 'index']);
     Route::delete('admin/draws/{id}', [DrawController::class, 'destroy']);
 
     Route::get('/user', [UserController::class, 'show']);
-    Route::put('/user', [UserController::class, 'update']);
+    Route::put('/admin/users/{id}', [UserController::class, 'update']);
 
     Route::put('/admin/draws/{id}', [AdminController::class, 'updateDrawResult']);
     Route::put('/admin/users/{id}/block', [AdminController::class, 'blockUser']);
