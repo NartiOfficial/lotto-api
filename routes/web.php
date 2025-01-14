@@ -11,3 +11,4 @@ Route::get('/up', function () {
 Route::get('/test-route', function () {
     return response()->json(['message' => 'Test route works'], 200);
 });
+

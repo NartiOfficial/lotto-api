@@ -20,10 +20,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Zarządzanie użytkownikami
     Route::get('/user/coupons', [UserController::class, 'couponsHistory']);
+    Route::get('/user', [UserController::class, 'show']);
 
     // Zarządzanie kuponami
     Route::post('/coupons', [CouponController::class, 'store']);
-    Route::get('/coupons', [CouponController::class, 'index']);
+    Route::get('/coupon', [CouponController::class, 'index']);
     Route::get('/coupons/results', [CouponController::class, 'checkResults']);
 
     // Zarządzanie losowaniami
@@ -38,9 +39,9 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::delete('/admin/coupons/{id}', [AdminController::class, 'deleteCoupon']);
 
     Route::get('/admin/users', [UserController::class, 'index']);
+    Route::get('/admin/users/{id}', [UserController::class, 'show']);
+    Route::delete('/admin/users/{id}', [UserController::class, 'destroy']);
     Route::delete('admin/draws/{id}', [DrawController::class, 'destroy']);
-
-    Route::get('/user', [UserController::class, 'show']);
     Route::put('/admin/users/{id}', [UserController::class, 'update']);
 
     Route::put('/admin/draws/{id}', [AdminController::class, 'updateDrawResult']);

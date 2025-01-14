@@ -59,4 +59,15 @@ class UserController extends Controller
         $users = User::with('roles')->get();
         return response()->json($users, 200);
     }
+
+    /**
+     * Usunięcie użytkownika
+     */
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return response()->json(['message' => 'Użytkownik został pomyślnie usunięty.'], 200);
+    }
 }
