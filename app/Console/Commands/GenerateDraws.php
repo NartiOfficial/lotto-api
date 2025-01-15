@@ -13,14 +13,14 @@ class GenerateDraws extends Command
      *
      * @var string
      */
-    protected $signature = 'draws:generate {--count=7}';
+    protected $signature = 'draws:generate';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update draws with results and generate future draws';
+    protected $description = 'Ensure there are always 6 upcoming draws and update null draws';
 
     /**
      * Execute the console command.
@@ -29,27 +29,22 @@ class GenerateDraws extends Command
      */
     public function handle()
     {
-        $count = (int) $this->option('count');
-        $startDate = Carbon::now();
-        $endDate = $startDate->copy()->addDays($count);
-
         $this->updateNullDraws();
 
-        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
-            if (in_array($date->dayOfWeek, [2, 4, 6])) { 
-                Draw::firstOrCreate([
-                    'draw_date' => $date->setTime(21, 40, 0), 
-                ]);
-            }
+        $futureDrawsCount = Draw::where('draw_date', '>', Carbon::now())->count();
+
+        $neededDraws = 6 - $futureDrawsCount;
+
+        if ($neededDraws > 0) {
+            $this->generateFutureDraws($neededDraws);
         }
 
-        $this->info('Losowania zostały zaktualizowane i utworzono przyszłe losowania.');
-
+        $this->info('Losowania zostały zaktualizowane i uzupełnione.');
         return 0;
     }
 
     /**
-     * Uaktualnienie losowań, które mają null w polu `winning_numbers`.
+     * Aktualizacja losowań bez wyników.
      */
     protected function updateNullDraws()
     {
@@ -61,6 +56,26 @@ class GenerateDraws extends Command
                 'winning_numbers' => $winningNumbers,
             ]);
             $this->info('Zaktualizowano wyniki losowania z datą: ' . $draw->draw_date->toDateTimeString());
+        }
+    }
+
+    /**
+     * Generowanie przyszłych losowań do przodu.
+     */
+    protected function generateFutureDraws($count)
+    {
+        $date = Carbon::now();
+
+        while ($count > 0) {
+            $date->addDay();
+
+            if (in_array($date->dayOfWeek, [2, 4, 6])) {
+                Draw::firstOrCreate([
+                    'draw_date' => $date->setTime(21, 40, 0),
+                ]);
+                $this->info('Utworzono losowanie na: ' . $date->toDateTimeString());
+                $count--;
+            }
         }
     }
 }
