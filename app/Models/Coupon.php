@@ -15,13 +15,14 @@ class Coupon extends Model
         'numbers' => 'array',
     ];
 
+    public function draws()
+    {
+        return $this->belongsToMany(Draw::class, 'coupon_draw', 'coupon_id', 'draw_id')
+                    ->withTimestamps();
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function draws()
-    {
-        return $this->belongsToMany(Draw::class);
     }
 }

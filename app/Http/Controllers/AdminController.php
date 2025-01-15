@@ -51,9 +51,15 @@ class AdminController extends Controller
     /**
      * Pobranie wszystkich użytkowników i ich kuponów
      */
-    public function getAllCoupons()
+    public function getAllCoupons(Request $request)
     {
-        $coupons = Coupon::with('user')->get();
+        $coupons = Coupon::with(['user', 'draws'])->paginate(10);
+
+        if ($coupons->isEmpty()) {
+            return response()->json([
+                'message' => 'Brak kuponów do wyświetlenia.',
+            ], 404);
+        }
 
         return response()->json($coupons, 200);
     }

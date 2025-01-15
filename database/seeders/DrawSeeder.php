@@ -13,23 +13,43 @@ class DrawSeeder extends Seeder
      */
     public function run()
     {
-        $currentDate = Carbon::now()->subDays(10)->startOfDay();
+        $startDate = Carbon::now()->subWeeks(2)->startOfDay();
+        $endDate = Carbon::now()->addWeeks(5)->endOfDay();
         $lottoTimes = ['21:40'];
         $daysOfWeek = [2, 4, 6];
-
-        for ($i = 0; $i < 5; $i++) {
+    
+        while ($startDate <= $endDate) {
             foreach ($daysOfWeek as $day) {
-                $drawDate = $currentDate->next($day);
+                $drawDate = $startDate->copy()->next($day);
                 foreach ($lottoTimes as $time) {
-                    Draw::factory()->create([
-                        'draw_date' => Carbon::parse($drawDate->format('Y-m-d') . " " . $time),
-                        'winning_numbers' => null
-                    ]);
+                    $drawDateTime = Carbon::parse($drawDate->format('Y-m-d') . " " . $time);
+                    if ($drawDateTime <= $endDate) {
+                        Draw::firstOrCreate(
+                            ['draw_date' => $drawDateTime],
+                            ['winning_numbers' => $drawDateTime < Carbon::now() ? $this->generateRandomNumbers() : null]
+                        );
+                    }
                 }
             }
-            $currentDate->addWeek();
+            $startDate->addWeek();
         }
-
-        $this->command->info('Losowania Lotto na najbliższe 5 tygodni zostały utworzone!');
+    
+        $this->command->info('Losowania Lotto zostały wygenerowane od 2 tygodni wstecz do 5 tygodni do przodu.');
+    }
+    
+    /**
+     * Generuje 6 unikalnych losowych liczb od 1 do 49.
+     */
+    private function generateRandomNumbers(): array
+    {
+        $numbers = [];
+        while (count($numbers) < 6) {
+            $number = rand(1, 49);
+            if (!in_array($number, $numbers)) {
+                $numbers[] = $number;
+            }
+        }
+        sort($numbers);
+        return $numbers;
     }
 }

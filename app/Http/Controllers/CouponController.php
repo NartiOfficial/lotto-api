@@ -114,4 +114,17 @@ class CouponController extends Controller
              return response()->json(['message' => 'Błąd podczas aktualizacji kuponu'], 500);
          }
      }
+
+    public function getAllCoupons(Request $request)
+    {
+        $coupons = Coupon::with(['user', 'draws'])->paginate(10);
+
+        if ($coupons->isEmpty()) {
+            return response()->json([
+                'message' => 'Brak kuponów do wyświetlenia.',
+            ], 404);
+        }
+
+        return response()->json($coupons, 200);
+    }
 }
