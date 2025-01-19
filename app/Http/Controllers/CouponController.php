@@ -127,4 +127,52 @@ class CouponController extends Controller
 
         return response()->json($coupons, 200);
     }
+
+    public function checkResultsByTicketId(Request $request, $ticketId)
+    {
+        $user = $request->user();
+    
+        \Log::info('Zalogowany użytkownik:', ['user_id' => $user->id]);
+    
+        $coupon = Coupon::where('user_id', $user->id)
+            ->with('draws')
+            ->where('id', $ticketId)
+            ->first();
+    
+        if (!$coupon) {
+            \Log::error('Kupon nie został znaleziony', [
+                'user_id' => $user->id,
+                'ticket_id' => $ticketId
+            ]);
+    
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket not found.',
+            ], 404);
+        }
+    
+        $results = [];
+    
+        foreach ($coupon->draws as $draw) {
+            $matchedNumbers = $draw->winning_numbers
+                ? count(array_intersect($coupon->numbers, $draw->winning_numbers))
+                : null;
+    
+            $results[] = [
+                'draw_id' => $draw->id,
+                'draw_date' => $draw->draw_date,
+                'user_numbers' => $coupon->numbers,
+                'winning_numbers' => $draw->winning_numbers,
+                'matched_numbers' => $matchedNumbers,
+                'status' => $draw->winning_numbers ? 'completed' : 'pending',
+            ];
+        }
+    
+        return response()->json([
+            'success' => true,
+            'ticket_id' => $coupon->id,
+            'results' => $results,
+        ]);
+    }
+    
 }

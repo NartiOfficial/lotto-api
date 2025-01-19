@@ -36,5 +36,12 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
         $admin->assignRole('admin');
+
+        $user = \App\Models\User::factory()->create([
+            'name' => 'Jakub Wielgocki',
+            'email' => 'jakubwielgocki02@gmail.com',
+            'password' => bcrypt('password'),
+        ]);
+        $user->assignRole('user');
     }
 }

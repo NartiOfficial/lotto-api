@@ -52,4 +52,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Coupon::class);
     }
+    
+    public function users()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            Coupon::class,
+            'draw_id',
+            'id',
+            'id',
+            'user_id'
+        );
+    }
 }

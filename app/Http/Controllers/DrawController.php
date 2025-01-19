@@ -50,4 +50,34 @@ class DrawController extends Controller
 
         return response()->json(['message' => 'Losowanie zostało usunięte.'], 200);
     }
+
+    public function checkWinners()
+    {
+        $draws = Draw::with('users')->get();
+
+        foreach ($draws as $draw) {
+            foreach ($draw->users as $user) {
+                $matchedNumbers = count(array_intersect($draw->winning_numbers, $user->numbers));
+
+                if ($matchedNumbers >= 3) {
+                    $this->sendWinningEmail($user->email, $matchedNumbers);
+                }
+            }
+        }
+
+        return response()->json(['message' => 'E-maile wysłane do zwycięzców.']);
+    }
+
+    private function sendWinningEmail(string $email, int $matchedNumbers)
+    {
+        $prizes = [
+            3 => "100",
+            4 => "1000",
+            5 => "10000",
+            6 => "1000000",
+        ];
+        $prize = $prizes[$matchedNumbers] ?? "0";
+
+        Mail::to($email)->send(new WinnerNotification($matchedNumbers, $prize));
+    }
 }

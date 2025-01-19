@@ -5,10 +5,17 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
+use Database\Seeders\RoleSeeder;
 
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(RoleSeeder::class);
+    }
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function user_can_register()
@@ -21,7 +28,10 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-                 ->assertJsonStructure(['user', 'token']);
+                 ->assertJsonStructure([
+                     'user' => ['id', 'name', 'email', 'role'],
+                     'token',
+                 ]);
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
@@ -37,7 +47,10 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJsonStructure(['user', 'token']);
+                 ->assertJsonStructure([
+                     'user' => ['id', 'name', 'email', 'role'],
+                     'token',
+                 ]);
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
@@ -51,6 +64,6 @@ class AuthTest extends TestCase
         ])->postJson('/api/logout');
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Logged out']);
+                 ->assertJson(['message' => 'Wylogowano pomyślnie.']);
     }
 }

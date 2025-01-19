@@ -15,8 +15,10 @@ Route::get('/draws', [DrawController::class, 'index']);
 
 
 // Trasy zabezpieczone (wymagają autoryzacji)
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum', 'role:user')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/tickets/{ticketId}/results', [CouponController::class, 'checkResultsByTicketId']);
+
 
     // Zarządzanie użytkownikami
     Route::get('/user/coupons', [UserController::class, 'couponsHistory']);
@@ -25,7 +27,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Zarządzanie kuponami
     Route::post('/coupons', [CouponController::class, 'store']);
     Route::get('/coupon', [CouponController::class, 'index']);
-    Route::get('/coupons/results', [CouponController::class, 'checkResults']);
 
     // Zarządzanie losowaniami
     Route::get('/draws/{id}', [DrawController::class, 'show']);

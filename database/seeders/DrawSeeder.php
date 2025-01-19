@@ -26,7 +26,7 @@ class DrawSeeder extends Seeder
                     if ($drawDateTime <= $endDate) {
                         Draw::firstOrCreate(
                             ['draw_date' => $drawDateTime],
-                            ['winning_numbers' => $drawDateTime < Carbon::now() ? $this->generateRandomNumbers() : null]
+                            // ['winning_numbers' => $drawDateTime < Carbon::now() ? $this->generateRandomNumbers() : null]
                         );
                     }
                 }

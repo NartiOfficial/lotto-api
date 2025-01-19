@@ -19,5 +19,5 @@ class Draw extends Model
     public function coupons()
     {
         return $this->belongsToMany(Coupon::class);
-    }
+    }    
 }
